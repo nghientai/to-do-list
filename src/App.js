@@ -9,13 +9,14 @@ class App extends Component {
     super(props);
     this.state = {
       tasks: [], // id: , name: "", status: true/false
-      isShowingForm: false
+      isShowingForm: false,
+      taskEditing: null
     };
   }
 
   // The component will call after DOM is updated
   componentDidMount() {
-    if (localStorage && localStorage.getItem("tasks") !== "") {
+    if (localStorage && localStorage.getItem("tasks")) {
       var tasks = JSON.parse(localStorage.getItem("tasks"));
       this.setState({
         tasks: tasks
@@ -52,59 +53,89 @@ class App extends Component {
     );
   }
 
-  generateData = () => {
-    var tasks = [
-      {
-        id: this.guid(),
-        name: "Task 1",
-        status: true
-      },
-      {
-        id: this.guid(),
-        name: "Task 2",
-        status: false
-      }
-    ];
-
-    this.setState({
-      tasks: tasks
-    });
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-    //console.log("generate");
-  };
-
   onSave = data => {
-    var tasks = this.state.tasks;
+    var { tasks } = this.state;
     data.status = data.status === "true" ? true : false;
-    if (data.id === "") {
-      data.id = this.guid();
-      if (tasks !== null) {
-        tasks.push(data);
-      } else {
-        tasks.push(data);
-      }
-    }
 
-    console.log(tasks);
+    data.id = this.guid();
+    tasks.push(data);
 
     this.setState({
       tasks: tasks
     });
 
     localStorage.setItem("tasks", JSON.stringify(tasks));
-    //console.log(data.status);
+    //console.log(tasks);
   };
 
-  onCancel = () => {
-    this.setState({
-      isShowingForm: false
+  onUpdateStatus = id => {
+    var { tasks } = this.state;
+    let index = this.findIndex(id);
+    if (index !== -1) {
+      tasks[index].status = !tasks[index].status;
+      this.setState({
+        tasks: tasks
+      });
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+    //console.log(index);
+  };
+
+  onDeleteItem = id => {
+    var { tasks } = this.state;
+    let index = this.findIndex(id);
+    if (index !== -1) {
+      tasks.splice(index, 1);
+      this.setState({
+        tasks: tasks
+      });
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+  };
+
+  findIndex = id => {
+    var { tasks } = this.state;
+    let resutl = -1;
+    tasks.forEach((task, index) => {
+      if (task.id == id) {
+        resutl = index;
+      }
     });
+    return resutl;
+  };
+
+  showForm = () => {
+    this.setState({
+      isShowingForm: true
+    });
+  };
+
+  onEditItem = id => {
+    // Open Form
+    this.showForm();
+
+    var { tasks } = this.state;
+    let index = this.findIndex(id);
+
+    if (index !== -1) {
+      let taskEditing = tasks[index];
+      //console.log(taskEditing);
+      this.setState({
+        taskEditing: taskEditing
+      });
+    }
   };
 
   render() {
-    var { tasks, isShowingForm } = this.state;
+    //console.log(this.state.tasks);
+    var { tasks, isShowingForm, taskEditing } = this.state;
+    //console.log(this.state.taskEditing);
     var taskForm = this.state.isShowingForm ? (
-      <TaskForm onSave={this.onSave} onCancel={this.onCancel} />
+      <TaskForm
+        taskEditing={taskEditing}
+        onSave={this.onSave}
+        onCancel={this.onCancel}
+      />
     ) : (
       ""
     );
@@ -140,20 +171,18 @@ class App extends Component {
               className="btn btn-primary"
               onClick={this.toggleForm}
             >
-              Add new
+              {isShowingForm ? "Close Todo Form" : "Add Todo"}
             </button>
 
-            <button
-              type="buton"
-              className="btn btn-primary ml-2"
-              onClick={this.generateData}
-            >
-              Generate
-            </button>
             {/* Search Form */}
             <TaskControl />
             {/* List */}
-            <TaskList tasks={tasks} />
+            <TaskList
+              tasks={tasks}
+              onUpdateStatus={this.onUpdateStatus}
+              onDeleteItem={this.onDeleteItem}
+              onEditItem={this.onEditItem}
+            />
           </div>
         </div>
 

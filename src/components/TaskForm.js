@@ -11,50 +11,62 @@ class TaskForm extends Component {
   }
 
   componentDidMount() {
-    //console.log("Component will mount");
+    if (this.props.taskEditing) {
+      //console.log(task);
+      this.setState({
+        id: this.props.taskEditing.id,
+        name: this.props.taskEditing.name,
+        status: this.props.taskEditing.status
+      });
+    }
+
     //this.resetState();
   }
 
-  // static getDerivedStateFromProps(nextProps, state) {
-  //   // console.log("Component props " + nextProps);
-  //   // return {
-  //   //   id: "",
-  //   //   name: "",
-  //   //   status: true
-  //   // };
-  //   //return null;
-  // }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps && nextProps.taskEditing) {
+      //console.log(task);
+      this.setState({
+        id: nextProps.taskEditing.id,
+        name: nextProps.taskEditing.name,
+        status: nextProps.taskEditing.status
+      });
+    }
+    //console.log(nextProps.taskEditing);
+  }
 
   resetState = () => {
     this.setState({
-      id: "",
       name: "",
-      status: true
+      status: false
     });
   };
 
   onSubmit = event => {
     event.preventDefault();
+    //console.log(this.state);
     this.props.onSave(this.state);
-    //console.log(event.target.name);
+    this.resetState();
   };
 
   onChaneHandle = event => {
     var target = event.target;
     var name = target.name;
-    var value = target.type === "checkbox" ? target.checked : target.value;
+    var value = target.value;
+
+    //console.log(target.name + " - " + target.value);
     this.setState({
       [name]: value
     });
-    //console.log(this.state);
   };
 
   onCancel = () => {
-    this.props.onCancel();
+    this.resetState();
+    //this.props.onCancel();
   };
 
   render() {
-    //console.log(this.state);
+    //console.log(this.props.taskEditing);
 
     return (
       <div className="card">
@@ -79,8 +91,8 @@ class TaskForm extends Component {
                 onChange={this.onChaneHandle}
                 value={this.state.status}
               >
-                <option value="{false}">Hide</option>
-                <option value="{true}">Active</option>
+                <option value={false}>Hide</option>
+                <option value={true}>Active</option>
               </select>
             </div>
 

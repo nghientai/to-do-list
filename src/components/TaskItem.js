@@ -1,6 +1,17 @@
 import React, { Component } from "react";
 
 class TaskItem extends Component {
+  onUpdateStatus = () => {
+    this.props.onUpdateStatus(this.props.task.id);
+  };
+
+  onDeleteItem = () => {
+    this.props.onDeleteItem(this.props.task.id);
+  };
+  onEditItem = () => {
+    this.props.onEditItem(this.props.task.id);
+  };
+
   render() {
     var { task, index } = this.props;
 
@@ -15,15 +26,24 @@ class TaskItem extends Component {
                 ? "badge badge-success"
                 : "badge badge-danger"
             }
+            onClick={this.onUpdateStatus}
           >
             {task.status === true ? "Active" : "Hide"}
           </span>
         </td>
         <td className="text-center">
-          <button type="button" className="btn btn-warning">
+          <button
+            onClick={this.onEditItem}
+            type="button"
+            className="btn btn-warning"
+          >
             Edit
           </button>
-          <button type="button" className="btn btn-danger ml-2">
+          <button
+            onClick={this.onDeleteItem}
+            type="button"
+            className="btn btn-danger ml-2"
+          >
             Delete
           </button>
         </td>
