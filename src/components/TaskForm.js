@@ -19,24 +19,22 @@ class TaskForm extends Component {
         status: this.props.taskEditing.status
       });
     }
-
-    //this.resetState();
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps && nextProps.taskEditing) {
-      //console.log(task);
+  //Use getDerivedStateFromProps instead of componentWillReceiveProps
+  componentWillReceiveProps(props) {
+    if (props && props.taskEditing) {
       this.setState({
-        id: nextProps.taskEditing.id,
-        name: nextProps.taskEditing.name,
-        status: nextProps.taskEditing.status
+        id: props.taskEditing.id,
+        name: props.taskEditing.name,
+        status: props.taskEditing.status
       });
     }
-    //console.log(nextProps.taskEditing);
   }
 
   resetState = () => {
     this.setState({
+      id: "",
       name: "",
       status: false
     });
@@ -44,9 +42,13 @@ class TaskForm extends Component {
 
   onSubmit = event => {
     event.preventDefault();
-    //console.log(this.state);
+    this.setState(this.state);
+
     this.props.onSave(this.state);
-    this.resetState();
+    if (this.state.id === "") {
+      //console.log(this.state);
+      this.resetState();
+    }
   };
 
   onChaneHandle = event => {
@@ -58,15 +60,19 @@ class TaskForm extends Component {
     this.setState({
       [name]: value
     });
+    //console.log(this.state);
   };
 
   onCancel = () => {
     this.resetState();
     //this.props.onCancel();
   };
+  onClear = () => {
+    this.resetState();
+  };
 
   render() {
-    //console.log(this.props.taskEditing);
+    //console.log(this.state.status);
 
     return (
       <div className="card">
@@ -82,6 +88,7 @@ class TaskForm extends Component {
                 value={this.state.name}
                 onChange={this.onChaneHandle}
               />
+              <input type="hidden" name="id" value={this.state.id} />
             </div>
             <div className="form-group">
               <label>Status</label>
@@ -105,6 +112,13 @@ class TaskForm extends Component {
               className="btn btn-danger ml-2"
             >
               Cancel
+            </button>
+            <button
+              type="button"
+              onClick={this.onClear}
+              className="btn btn-danger ml-2"
+            >
+              Clear
             </button>
           </form>
         </div>

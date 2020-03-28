@@ -3,7 +3,7 @@ import TaskSearchControl from "./TaskSearchControl";
 
 class TaskControl extends Component {
   render() {
-    return <TaskSearchControl />;
+    return <TaskSearchControl onSearch={this.onSearch} />;
   }
 }
 

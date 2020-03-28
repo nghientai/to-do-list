@@ -3,6 +3,7 @@ import Footer from "./components/Footer";
 import TaskControl from "./components/TaskControl";
 import TaskList from "./components/TaskList";
 import TaskForm from "./components/TaskForm";
+//import { findIndex, filter } from "lodash";
 
 class App extends Component {
   constructor(props) {
@@ -10,7 +11,12 @@ class App extends Component {
     this.state = {
       tasks: [], // id: , name: "", status: true/false
       isShowingForm: false,
-      taskEditing: null
+      taskEditing: null,
+      filter: {
+        name: "",
+        status: -1
+      },
+      keyword: ""
     };
   }
 
@@ -26,7 +32,8 @@ class App extends Component {
 
   toggleForm = () => {
     this.setState({
-      isShowingForm: !this.state.isShowingForm
+      isShowingForm: !this.state.isShowingForm,
+      taskEditing: null
     });
   };
 
@@ -55,10 +62,20 @@ class App extends Component {
 
   onSave = data => {
     var { tasks } = this.state;
-    data.status = data.status === "true" ? true : false;
 
-    data.id = this.guid();
-    tasks.push(data);
+    data.status = data.status === "true" || data.status ? true : false;
+    console.log(data.status);
+
+    if (data.id === "") {
+      data.id = this.guid();
+      tasks.push(data);
+    } else {
+      let index = this.findIndex(data.id);
+      tasks[index] = data;
+      this.setState({
+        taskEditing: data
+      });
+    }
 
     this.setState({
       tasks: tasks
@@ -126,10 +143,48 @@ class App extends Component {
     }
   };
 
+  onFilter = (filterName, filterStatus) => {
+    filterStatus = parseInt(filterStatus, 10);
+    this.setState({
+      filter: {
+        name: filterName.toLowerCase(),
+        status: filterStatus
+      }
+    });
+  };
+
+  onSearch = keyword => {
+    this.setState({
+      keyword: keyword.toLowerCase()
+    });
+  };
+
   render() {
     //console.log(this.state.tasks);
-    var { tasks, isShowingForm, taskEditing } = this.state;
-    //console.log(this.state.taskEditing);
+    var { tasks, isShowingForm, taskEditing, filter, keyword } = this.state;
+    //console.log(filter);
+
+    if (filter) {
+      if (filter.name) {
+        tasks = tasks.filter(task => {
+          return task.name.toLowerCase().indexOf(filter.name) !== -1;
+        });
+      }
+
+      tasks = tasks.filter(task => {
+        if (filter.status === -1) {
+          return task;
+        } else {
+          return task.status === (filter.status === 1 ? true : false);
+        }
+      });
+    }
+    if (keyword) {
+      tasks = tasks.filter(task => {
+        return task.name.toLowerCase().indexOf(keyword) !== -1;
+      });
+    }
+
     var taskForm = this.state.isShowingForm ? (
       <TaskForm
         taskEditing={taskEditing}
@@ -175,13 +230,14 @@ class App extends Component {
             </button>
 
             {/* Search Form */}
-            <TaskControl />
+            <TaskControl onSearch={this.onSearch} />
             {/* List */}
             <TaskList
               tasks={tasks}
               onUpdateStatus={this.onUpdateStatus}
               onDeleteItem={this.onDeleteItem}
               onEditItem={this.onEditItem}
+              onFilter={this.onFilter}
             />
           </div>
         </div>
