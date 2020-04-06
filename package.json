@@ -1,6 +1,6 @@
 {
-    "homepage": "http://nghientai.github.io/todolist-redux",
-    "name": "todolist-redux",
+    "homepage": "http://nghientai.github.io/to-do-list",
+    "name": "to-do-list",
     "version": "0.1.0",
     "private": true,
     "dependencies": {
