@@ -1,14 +1,13 @@
-import { TOGGLE_FORM } from "../constants/actionTypes";
+import { TOGGLE_FORM, OPEN_FORM } from "../constants/actionTypes";
 
 var initialState = false;
 
 var reducers = (state = initialState, action) => {
     switch (action.type) {
         case TOGGLE_FORM:
-            //console.log(action);
-
             return !state;
-
+        case OPEN_FORM:
+            return true;
         default:
             return state;
     }

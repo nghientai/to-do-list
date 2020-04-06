@@ -8,7 +8,7 @@ class TaskForm extends Component {
         this.state = {
             id: "",
             name: "",
-            status: false
+            status: true
         };
     }
 
@@ -31,6 +31,8 @@ class TaskForm extends Component {
                 name: props.taskEditing.name,
                 status: props.taskEditing.status
             });
+        } else {
+            this.resetState();
         }
     }
 
@@ -38,17 +40,16 @@ class TaskForm extends Component {
         this.setState({
             id: "",
             name: "",
-            status: false
+            status: true
         });
     };
 
     onSubmit = event => {
         event.preventDefault();
         this.setState(this.state);
-        this.props.onAddTask(this.state);
-        //this.props.onSave(this.state);
-        if (this.state.id === "") {
-            //console.log(this.state);
+        this.props.onSaveTask(this.state);
+
+        if (typeof this.state.id === "undefined") {
             this.resetState();
         }
     };
@@ -58,7 +59,6 @@ class TaskForm extends Component {
         var name = target.name;
         var value = target.value;
 
-        //console.log(target.name + " - " + target.value);
         this.setState({
             [name]: value
         });
@@ -75,7 +75,7 @@ class TaskForm extends Component {
 
     render() {
         //console.log(this.state.status);
-
+        if (!this.props.isShowingForm) return "";
         return (
             <div className="card">
                 <div className="card-body">
@@ -89,6 +89,7 @@ class TaskForm extends Component {
                                 placeholder="Task name"
                                 value={this.state.name}
                                 onChange={this.onChaneHandle}
+                                required
                             />
                             <input
                                 type="hidden"
@@ -104,8 +105,8 @@ class TaskForm extends Component {
                                 onChange={this.onChaneHandle}
                                 value={this.state.status}
                             >
-                                <option value={false}>Hide</option>
                                 <option value={true}>Active</option>
+                                <option value={false}>Completed</option>
                             </select>
                         </div>
 
@@ -134,13 +135,16 @@ class TaskForm extends Component {
 }
 
 const mapStateToProps = state => {
-    return {};
+    return {
+        isShowingForm: state.toggleForm,
+        taskEditing: state.itemEditting
+    };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-        onAddTask: task => {
-            dispatch(actions.addTask(task));
+        onSaveTask: task => {
+            dispatch(actions.saveTask(task));
         }
     };
 };

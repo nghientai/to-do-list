@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import TaskItem from "./TaskItem";
 import { connect } from "react-redux";
+import * as actions from "../actions";
 
 class TaskList extends Component {
     constructor(props) {
@@ -15,22 +16,38 @@ class TaskList extends Component {
         var target = event.target;
         var name = target.name;
         var value = target.value;
-        this.props.onFilter(
-            name === "filterName" ? value : this.state.filterName,
-            name === "filterStatus" ? value : this.state.filterStatus
-        );
+
+        this.props.onFilter({
+            filterName: name === "filterName" ? value : this.state.filterName,
+            filterStatus:
+                name === "filterStatus" ? value : this.state.filterStatus
+        });
         this.setState({
             [name]: value
         });
-
-        //console.log(this.state);
     };
 
     render() {
-        //console.log(this.props.tasks);
         var taskItems;
-        var { filterName, filterStatus } = this.props.tasks;
-        if (this.props.tasks == null) {
+        var { filterName, filterStatus } = this.props.filter;
+        var { tasks } = this.props;
+
+        if (filterName) {
+            tasks = tasks.filter(task => {
+                return task.name.toLowerCase().indexOf(filterName) !== -1;
+            });
+        }
+        //console.log(filterStatus);
+
+        tasks = tasks.filter(task => {
+            if (filterStatus === -1) {
+                return task;
+            } else {
+                return task.status === (filterStatus === 1 ? true : false);
+            }
+        });
+
+        if (tasks.length === 0) {
             //console.log(this.props.tasks.length);
             taskItems = (
                 <tr>
@@ -38,18 +55,8 @@ class TaskList extends Component {
                 </tr>
             );
         } else {
-            var { tasks } = this.props;
             taskItems = tasks.map((task, index) => {
-                return (
-                    <TaskItem
-                        key={task.id}
-                        task={task}
-                        index={index + 1}
-                        onUpdateStatus={this.props.onUpdateStatus}
-                        onDeleteItem={this.props.onDeleteItem}
-                        onEditItem={this.props.onEditItem}
-                    />
-                );
+                return <TaskItem key={task.id} task={task} index={index + 1} />;
             });
         }
 
@@ -85,7 +92,7 @@ class TaskList extends Component {
                                 onChange={this.onChange}
                             >
                                 <option value="-1">All</option>
-                                <option value="0">Hide</option>
+                                <option value="0">Completed</option>
                                 <option value="1">Active</option>
                             </select>
                         </td>
@@ -100,8 +107,17 @@ class TaskList extends Component {
 
 const mapStateToProps = state => {
     return {
-        tasks: state.tasks
+        tasks: state.tasks,
+        filter: state.filterTable
     };
 };
 
-export default connect(mapStateToProps, null)(TaskList);
+const mapActionsToProps = dispatch => {
+    return {
+        onFilter: filterData => {
+            dispatch(actions.filterTable(filterData));
+        }
+    };
+};
+
+export default connect(mapStateToProps, mapActionsToProps)(TaskList);

@@ -10,9 +10,6 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            //tasks: [], // id: , name: "", status: true/false
-            //isShowingForm: false,
-            taskEditing: null,
             filter: {
                 name: "",
                 status: -1
@@ -22,72 +19,10 @@ class App extends Component {
     }
 
     toggleForm = () => {
-        /* this.setState({
-            isShowingForm: !this.state.isShowingForm,
-            taskEditing: null
-        }); */
         this.props.toggleForm();
     };
 
-    onUpdateStatus = id => {
-        var { tasks } = this.state;
-        let index = this.findIndex(id);
-        if (index !== -1) {
-            tasks[index].status = !tasks[index].status;
-            this.setState({
-                tasks: tasks
-            });
-            localStorage.setItem("tasks", JSON.stringify(tasks));
-        }
-        //console.log(index);
-    };
-
-    onDeleteItem = id => {
-        var { tasks } = this.state;
-        let index = this.findIndex(id);
-        if (index !== -1) {
-            tasks.splice(index, 1);
-            this.setState({
-                tasks: tasks
-            });
-            localStorage.setItem("tasks", JSON.stringify(tasks));
-        }
-    };
-
-    findIndex = id => {
-        var { tasks } = this.state;
-        let resutl = -1;
-        tasks.forEach((task, index) => {
-            if (task.id === id) {
-                resutl = index;
-            }
-        });
-        return resutl;
-    };
-
-    showForm = () => {
-        this.setState({
-            isShowingForm: true
-        });
-    };
-
-    onEditItem = id => {
-        // Open Form
-        this.showForm();
-
-        var { tasks } = this.state;
-        let index = this.findIndex(id);
-
-        if (index !== -1) {
-            let taskEditing = tasks[index];
-            //console.log(taskEditing);
-            this.setState({
-                taskEditing: taskEditing
-            });
-        }
-    };
-
-    onFilter = (filterName, filterStatus) => {
+    /* onFilter = (filterName, filterStatus) => {
         filterStatus = parseInt(filterStatus, 10);
         this.setState({
             filter: {
@@ -95,7 +30,7 @@ class App extends Component {
                 status: filterStatus
             }
         });
-    };
+    }; */
 
     onSearch = keyword => {
         this.setState({
@@ -105,7 +40,7 @@ class App extends Component {
 
     render() {
         //console.log(this.state.tasks);
-        var { taskEditing, filter, keyword } = this.state;
+        var { filter, keyword } = this.state;
         var { isShowingForm } = this.props;
         //console.log(this.props);
 
@@ -130,12 +65,6 @@ class App extends Component {
             }); */
         }
 
-        var taskForm = isShowingForm ? (
-            <TaskForm taskEditing={taskEditing} onCancel={this.onCancel} />
-        ) : (
-            ""
-        );
-
         return (
             <div className="container">
                 {/* Logo */}
@@ -152,7 +81,7 @@ class App extends Component {
                                 : ""
                         }
                     >
-                        {taskForm}
+                        <TaskForm onCancel={this.onCancel} />
                     </div>
                     <div
                         className={
@@ -173,12 +102,7 @@ class App extends Component {
                         {/* Search Form */}
                         <TaskControl onSearch={this.onSearch} />
                         {/* List */}
-                        <TaskList
-                            onUpdateStatus={this.onUpdateStatus}
-                            onDeleteItem={this.onDeleteItem}
-                            onEditItem={this.onEditItem}
-                            onFilter={this.onFilter}
-                        />
+                        <TaskList />
                     </div>
                 </div>
 
