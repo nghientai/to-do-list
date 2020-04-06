@@ -1,69 +1,23 @@
 import React, { Component } from "react";
 import Footer from "./components/Footer";
-import TaskControl from "./components/TaskControl";
+import TaskSearchControl from "./components/TaskSearchControl";
 import TaskList from "./components/TaskList";
 import TaskForm from "./components/TaskForm";
 import { connect } from "react-redux";
 import * as actions from "./actions";
+import TaskSortControl from "./components/TaskSortControl";
 
 class App extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            filter: {
-                name: "",
-                status: -1
-            },
-            keyword: ""
-        };
     }
 
     toggleForm = () => {
         this.props.toggleForm();
     };
 
-    /* onFilter = (filterName, filterStatus) => {
-        filterStatus = parseInt(filterStatus, 10);
-        this.setState({
-            filter: {
-                name: filterName.toLowerCase(),
-                status: filterStatus
-            }
-        });
-    }; */
-
-    onSearch = keyword => {
-        this.setState({
-            keyword: keyword.toLowerCase()
-        });
-    };
-
     render() {
-        //console.log(this.state.tasks);
-        var { filter, keyword } = this.state;
         var { isShowingForm } = this.props;
-        //console.log(this.props);
-
-        if (filter) {
-            /* if (filter.name) {
-                tasks = tasks.filter(task => {
-                    return task.name.toLowerCase().indexOf(filter.name) !== -1;
-                });
-            }
-
-            tasks = tasks.filter(task => {
-                if (filter.status === -1) {
-                    return task;
-                } else {
-                    return task.status === (filter.status === 1 ? true : false);
-                }
-            }); */
-        }
-        if (keyword) {
-            /* tasks = tasks.filter(task => {
-                return task.name.toLowerCase().indexOf(keyword) !== -1;
-            }); */
-        }
 
         return (
             <div className="container">
@@ -98,9 +52,12 @@ class App extends Component {
                         >
                             {isShowingForm ? "Close Todo Form" : "Add Todo"}
                         </button>
-
                         {/* Search Form */}
-                        <TaskControl onSearch={this.onSearch} />
+                        <div className="row mt-3">
+                            <TaskSearchControl />
+                            {/* <TaskSortControl /> */}
+                        </div>
+
                         {/* List */}
                         <TaskList />
                     </div>

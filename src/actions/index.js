@@ -52,3 +52,15 @@ export const filterTable = filterData => {
         filterData
     };
 };
+export const searchByKeywords = keyword => {
+    return {
+        type: types.SEARCH_BY_KEYWORD,
+        keyword
+    };
+};
+export const sortByName = v => {
+    return {
+        type: types.SORT_BY_NAME,
+        v
+    };
+};

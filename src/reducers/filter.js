@@ -14,8 +14,8 @@ var reducers = (state = initialState, action) => {
                 filterStatus: filterStatus
             };
 
-            //return state;
             return { ...state };
+
         default:
             return state;
     }
